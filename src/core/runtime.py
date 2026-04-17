@@ -1,4 +1,5 @@
 import time
+from rich import print
 
 
 def run(iterator, seconds):
@@ -9,5 +10,5 @@ def run(iterator, seconds):
         if time.time() > end_time:
             break
         count+=1
-        print(count, price)
+        print(f"[white]{count}[/white] [green]{price}[green]")
         time.sleep(0.1)
