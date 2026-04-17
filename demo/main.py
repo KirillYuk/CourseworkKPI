@@ -3,6 +3,6 @@ from core.runtime import run
  
 
 seconds = float(input("seconds: "))
-gen = price_generator(symbol="CRPR", start_price=10, volatility=1)
+gen = price_generator(symbol="CRPR", start_price=50000.0, volatility=10)
 run(gen, seconds)
  
