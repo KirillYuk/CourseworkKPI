@@ -9,3 +9,6 @@ requires-python = ">=3.10"
 dependencies = [
     "rich"
 ]
+
+[tool.setuptools.packages.find]
+where = ["src"]
