@@ -1,8 +1,9 @@
 import random
 
 
-def price_generator(start_price=50000.0, volatility=100):
+def price_generator(symbol="CRPR", start_price=50000.0, volatility=10):
     price = start_price
+    
     while True:
         price = price + random.uniform(-volatility, volatility)
-        yield price
+        yield symbol, round(price, 2)
