@@ -1,3 +1,5 @@
+from core.cache import memoize
+
 COINS = {
     "BTC": {
         "symbol": "BTC",
@@ -32,5 +34,6 @@ COINS = {
 }
 
 
+@memoize
 def get_coin_info(symbol):
     return COINS.get(symbol.upper())
