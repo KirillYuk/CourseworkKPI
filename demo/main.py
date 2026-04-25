@@ -23,3 +23,6 @@ elif command == "info":
             print(key + ":", value)
     else:
         print("coin not found", symbol)
+        
+else:
+    print("unknown command:", command)
