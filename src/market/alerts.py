@@ -18,3 +18,14 @@ class BiQueue:
 
         self.queue.remove(item)
         return item[2]
+    
+    def peek(self, mode):
+        if len(self.queue) == 0:
+            return None
+
+        if mode == 'highest':
+            item = max(self.queue, key=lambda x: x[1])
+        elif mode == 'lowest':
+            item = min(self.queue, key=lambda x: x[1])
+
+        return item[2]
