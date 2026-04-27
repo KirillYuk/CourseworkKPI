@@ -16,7 +16,7 @@ def run(iterator, seconds):
         if time.time() > end_time:
             break
 
-        count+=1
+        count += 1
         total += tick["price"]
 
         if min_price is None or tick["price"] < min_price:
@@ -36,6 +36,7 @@ def run(iterator, seconds):
                  "signal": signal},
                 priority=3
             )
+            print(f"[green]BUY {tick["symbol"]} RSI: {rsi}[/green]")
         
         elif signal == "SELL":
             alert_queue.enqueue(
@@ -44,13 +45,8 @@ def run(iterator, seconds):
                  "signal": signal},
                 priority=2
             )
+            print(f"[red]SELL {tick["symbol"]} RSI: {rsi}[/red]")
         
         print(f"[white]{count}[/white] [red]{tick["symbol"]}[/red] [green]{round(tick["price"], 2)}[green]", "   avg: ", avg, "   min: ", min_price, "   max: ", max_price)
         
-        time.sleep(0.01)
-        
-    print("\n[bold yellow]ALERTS[/bold yellow]")
-    alert = alert_queue.dequeue("highest")
-    while alert != None:
-        print(f"[red]{alert["signal"]}[/red] {alert["symbol"]} RSI: {alert["rsi"]}")
-        alert = alert_queue.dequeue("highest")
+        time.sleep(1)
