@@ -29,6 +29,10 @@ def run(iterator, seconds):
         rsi = tick["technical"]["rsi"]
         signal = tick["technical"]["signal"]
         
+        
+        print(f"[white]{count}[/white] [red]{tick["symbol"]}[/red] [green]{round(tick["price"], 2)}[green]", "   avg: ", avg, "   min: ", min_price, "   max: ", max_price)
+        
+        
         if signal == "BUY":
             alert_queue.enqueue(
                 {"symbol": tick["symbol"],
@@ -47,6 +51,5 @@ def run(iterator, seconds):
             )
             print(f"[red]SELL {tick["symbol"]} RSI: {rsi}[/red]")
         
-        print(f"[white]{count}[/white] [red]{tick["symbol"]}[/red] [green]{round(tick["price"], 2)}[green]", "   avg: ", avg, "   min: ", min_price, "   max: ", max_price)
         
         time.sleep(1)
