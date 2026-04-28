@@ -1,10 +1,10 @@
-import time
+import asyncio
 from rich import print
 from market.alerts import BiQueue
 
 
-def run(iterator, seconds):
-    end_time = time.time() + seconds
+async def async_run(iterator, seconds):
+    end_time = asyncio.get_event_loop().time() + seconds
     count = 0
     total = 0
     min_price = None
@@ -13,7 +13,7 @@ def run(iterator, seconds):
 
 
     for tick in iterator:
-        if time.time() > end_time:
+        if asyncio.get_event_loop().time() > end_time:
             break
 
         count += 1
@@ -51,5 +51,3 @@ def run(iterator, seconds):
             )
             print(f"[red]SELL {tick["symbol"]} RSI: {rsi}[/red]")
         
-        
-        time.sleep(1)
