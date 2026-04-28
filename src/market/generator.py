@@ -1,18 +1,45 @@
 import random
 
 
+def calculate_rsi(prices):
+    if len(prices) < 14:
+        return None
+    
+    gains = []
+    losses = []
+    
+    for i in range(1, 14):
+        change = prices[i] - prices[i - 1]
+        if change > 0:
+            gains.append(change)
+            losses.append(0)
+        else:
+            gains.append(0)
+            losses.append(abs(change))
+            
+    avg_gain = sum(gains) / 14
+    avg_loss = sum(losses) / 14
+    
+    if avg_loss == 0:
+        return 100
+    
+    rs = avg_gain / avg_loss
+    rsi = round(100 - (100 / (1+ rs)), 1)
+    return rsi
+
 def price_generator(symbol="CRPR", start_price=50000.0, volatility=10):
     price = start_price
-    rsi = 50.0
+    prices = []
     
     while True:
         price = price + random.uniform(-volatility, volatility)
-        change_24h = round(random.uniform(-10, 10), 2)
-        rsi = rsi + random.uniform(-5, 5)
-        rsi = max(10, min(90, rsi))
-        rsi = round(rsi, 1)
+        prices.append(price)
         
-        if rsi < 30:
+        change_24h = round(random.uniform(-10, 10), 2)
+        rsi = calculate_rsi(prices[-14:])
+        if rsi == None:
+            signal = "NEUTRAL"
+        elif rsi < 30:
             signal = "BUY"
         elif rsi > 70:
             signal = "SELL"
