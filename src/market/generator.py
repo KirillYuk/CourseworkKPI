@@ -1,4 +1,5 @@
 import random
+import asyncio
 
 
 def calculate_rsi(prices):
@@ -59,3 +60,39 @@ def price_generator(symbol="CRPR", start_price=50000.0, volatility=10):
                 "signal": signal,
             }
         }
+
+
+async def async_price_generator(symbol="CRPR", start_price=50000.0, volatility=10):
+    price = start_price
+    prices = []
+    
+    while True:
+        price = price + random.uniform(-volatility, volatility)
+        prices.append(price)
+        
+        change_24h = round(random.uniform(-10, 10), 2)
+        rsi = calculate_rsi(prices[-14:])
+        if rsi == None:
+            signal = "NEUTRAL"
+        elif rsi < 30:
+            signal = "BUY"
+        elif rsi > 70:
+            signal = "SELL"
+        else:
+            signal = "NEUTRAL"
+
+
+
+        yield {
+            "symbol": symbol,
+            "price": round(price, 2),
+            "change_24h": change_24h,
+            "market_cap": round(price * 19000000, 2),
+            "volume": round(random.uniform(30000000000, 60000000000), 2),
+            "technical": {
+                "rsi": rsi,
+                "signal": signal,
+            }
+        }
+        
+        await asyncio.sleep(1)
