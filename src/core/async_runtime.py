@@ -12,7 +12,7 @@ async def async_run(iterator, seconds):
     alert_queue = BiQueue()
 
 
-    for tick in iterator:
+    async for tick in iterator:
         if asyncio.get_event_loop().time() > end_time:
             break
 
