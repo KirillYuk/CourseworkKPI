@@ -19,3 +19,8 @@ def read_csv(filename):
         reader = csv.DictReader(f)
         for row in reader:
             yield row
+            
+def filter_by_symbol(filename, symbol):
+    for row in read_csv(filename):
+        if row["symbol"] == symbol:
+            yield row
