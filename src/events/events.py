@@ -13,15 +13,15 @@ class EventEmitter:
             
     def emit(self, event, data):
         if event in self.listeners:
-            for callback in self.listeners:
+            for callback in self.listeners[event]:
                 callback(data)
                 
                 
 def on_buy_signal(data):
-    print(f"[event] BUY signal {data["symbol"]} RSI: {data["rsa"]}")
+    print(f"[event] BUY signal {data["symbol"]} RSI: {data["rsi"]}")
         
 def on_sell_signal(data):
-        print(f"[event] SELL signal {data["symbol"]} RSI: {data["rsa"]}")
+        print(f"[event] SELL signal {data["symbol"]} RSI: {data["rsi"]}")
         
 def on_price_threshold(data):
     print(f"[event] PRICE signal {data["symbol"]} price: {data["price"]}")

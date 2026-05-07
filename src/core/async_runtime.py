@@ -14,9 +14,9 @@ async def async_run(iterator, seconds, price_threshold=None):
 
     emitter = EventEmitter()
     emitter.subscribe("buy_signal", on_buy_signal)
-    emitter.subscribe("sel_signal", on_sell_signal)
-    if price_threshold:
-        emitter.subscribe("price_treshhold", on_price_threshold)
+    emitter.subscribe("sell_signal", on_sell_signal)
+    if price_threshold is not None:
+        emitter.subscribe("price_threshold", on_price_threshold)
         
 
     async for tick in iterator:
@@ -58,5 +58,5 @@ async def async_run(iterator, seconds, price_threshold=None):
             )
             emitter.emit("sell_signal", {"symbol": tick["symbol"], "rsi": rsi})
             
-        if price_threshold and tick["price"] > price_threshold:
-            emitter.emit("price_treshold", {"symbol": tick["symvol"], "price": tick["price"]})
+        if price_threshold is not None and tick["price"] > price_threshold:
+            emitter.emit("price_threshold", {"symbol": tick["symbol"], "price": tick["price"]})
