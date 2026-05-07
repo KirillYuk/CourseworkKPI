@@ -23,5 +23,5 @@ def on_buy_signal(data):
 def on_sell_signal(data):
         print(f"[event] SELL signal {data["symbol"]} RSI: {data["rsa"]}")
         
-def on_prise_threshold(data):
+def on_price_threshold(data):
     print(f"[event] PRICE signal {data["symbol"]} price: {data["price"]}")

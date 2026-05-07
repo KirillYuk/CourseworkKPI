@@ -1,10 +1,10 @@
 import asyncio
 from rich import print
 from market.alerts import BiQueue
-from events.events import EventEmitter, on_buy_signal, on_sell_signal, on_prise_threshold
+from events.events import EventEmitter, on_buy_signal, on_sell_signal, on_price_threshold
 
 
-async def async_run(iterator, seconds, prise_treshhold=None):
+async def async_run(iterator, seconds, price_threshold=None):
     end_time = asyncio.get_event_loop().time() + seconds
     count = 0
     total = 0
@@ -15,8 +15,8 @@ async def async_run(iterator, seconds, prise_treshhold=None):
     emitter = EventEmitter()
     emitter.subscribe("buy_signal", on_buy_signal)
     emitter.subscribe("sel_signal", on_sell_signal)
-    if prise_treshhold:
-        emitter.subscribe("price_treshhold", on_prise_threshold)
+    if price_threshold:
+        emitter.subscribe("price_treshhold", on_price_threshold)
         
 
     async for tick in iterator:
@@ -58,5 +58,5 @@ async def async_run(iterator, seconds, prise_treshhold=None):
             )
             emitter.emit("sell_signal", {"symbol": tick["symbol"], "rsi": rsi})
             
-        if prise_treshhold and tick["price"] > prise_treshhold:
+        if price_threshold and tick["price"] > price_threshold:
             emitter.emit("price_treshold", {"symbol": tick["symvol"], "price": tick["price"]})

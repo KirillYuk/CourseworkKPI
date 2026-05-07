@@ -26,8 +26,10 @@ elif command == "async_stream":
         print("coin not found:", symbol)
     else:
         seconds = float(input("seconds: "))
+        threshold = input("price treshold(enter to skip): ")
+        threshold = float(threshold) if threshold else None
         gen = async_price_generator(symbol=symbol, start_price=50000.0, volatility=100)
-        asyncio.run(async_run(gen, seconds))
+        asyncio.run(async_run(gen, seconds, price_threshold=threshold))
 
 elif command == "info":
     info = get_coin_info(symbol)
