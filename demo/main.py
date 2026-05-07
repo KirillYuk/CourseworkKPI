@@ -3,6 +3,7 @@ from market.generator import price_generator, async_price_generator
 from core.runtime import run
 from market.coins import get_coin_info 
 from core.async_runtime import async_run
+from core.stream import generate_csv, history_stats
 
 
 command = input("command (stream/async_stream/info): ")
@@ -35,6 +36,22 @@ elif command == "info":
             print(key + ":", value)
     else:
         print("coin not found", symbol)
+        
+elif command == "history":
+    filename = "history.csv"
+    days = int(input("days: "))
+    
+    generate_csv(filename, symbol=symbol, days=days)
+    
+    for row in history_stats(filename, symbol):
+        print(
+            "day: ", row["day"],
+            "symbol: ", row["symbol"],
+            "price: ", row["price"],
+            "avg: ", row["avg"],
+            "min: ", row["min"],
+            "max: ", row["max"],
+        )
         
 else:
     print("unknown command:", command)
