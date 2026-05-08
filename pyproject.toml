@@ -4,10 +4,12 @@ version = "0.1.0"
 authors = [
     { name = "Kyrylo Yukhymchuk" }
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 
 dependencies = [
-    "rich"
+    "rich",
+    "requests",
+    "python-dotenv"
 ]
 
 [tool.setuptools.packages.find]

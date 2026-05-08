@@ -8,7 +8,7 @@ from api.api import get_real_price
 
 
 command = input("command (stream/async_stream/info): ")
-symbol = input("symbol: ")
+symbol = input("symbol: ").strip().upper()
 
 
 if command == "stream":

@@ -5,12 +5,14 @@ class AuthProxy:
         self.token = token
         
     def get_headers(self):
-        if self.method == "api_key":
+        if self.method == "x_api_key":
             return {"x-api-key": self.key}
         elif self.method == "jwt":
             return {"Authorization": "Bearer " + self.token}
         elif self.method == "oauth":
             return {"Authorization": "OAuth " + self.token}
+        elif self.method == "api_key":
+            return {"Authorization": "Bearer " + self.key}
         return {}
     
     def get(self, url):
