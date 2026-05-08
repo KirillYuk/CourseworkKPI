@@ -4,6 +4,7 @@ from core.runtime import run
 from market.coins import get_coin_info 
 from core.async_runtime import async_run
 from core.stream import generate_csv, history_stats
+from api.api import get_real_price
 
 
 command = input("command (stream/async_stream/info): ")
@@ -54,6 +55,15 @@ elif command == "history":
             "min: ", row["min"],
             "max: ", row["max"],
         )
+        
+elif command == "price":
+    data = get_real_price(symbol)
+    if data:
+        for key, value in data.items():
+            print(key, value)
+    else:
+        print("coin not found", symbol)
+        
         
 else:
     print("unknown command:", command)
