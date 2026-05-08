@@ -5,3 +5,4 @@ docs.md
 *.egg-info/
 history.csv
 TESTING/
+.env
