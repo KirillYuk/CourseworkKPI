@@ -4,6 +4,20 @@ from market.alerts import BiQueue
 from events.events import EventEmitter, on_buy_signal, on_sell_signal, on_price_threshold
 
 
+async def handle_commands(emitter, stop_event):
+    while not stop_event.is_set():
+        try:
+            command = await asyncio.get_event_loop().run_in_executor(None, input, "> ")
+            
+            if command == "unsubscribe price_threshold":
+                emitter.unsubscribe("price_threshold", on_price_threshold)
+                print("unsubscribed from price_threshold")
+            elif command == "stop":
+                stop_event.set()
+        except Exception:
+            break
+
+
 async def async_run(iterator, seconds, price_threshold=None):
     end_time = asyncio.get_event_loop().time() + seconds
     count = 0
@@ -11,6 +25,7 @@ async def async_run(iterator, seconds, price_threshold=None):
     min_price = None
     max_price = None
     alert_queue = BiQueue()
+    stop_event = asyncio.Event()
 
     emitter = EventEmitter()
     emitter.subscribe("buy_signal", on_buy_signal)
@@ -18,9 +33,11 @@ async def async_run(iterator, seconds, price_threshold=None):
     if price_threshold is not None:
         emitter.subscribe("price_threshold", on_price_threshold)
         
+    command_task = asyncio.create_task(handle_commands(emitter, stop_event))
+        
 
     async for tick in iterator:
-        if asyncio.get_event_loop().time() > end_time:
+        if asyncio.get_event_loop().time() > end_time or stop_event.is_set():
             break
 
         count += 1
@@ -60,3 +77,5 @@ async def async_run(iterator, seconds, price_threshold=None):
             
         if price_threshold is not None and tick["price"] > price_threshold:
             emitter.emit("price_threshold", {"symbol": tick["symbol"], "price": tick["price"]})
+            
+    command_task.cancel()

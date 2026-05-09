@@ -9,7 +9,8 @@ class EventEmitter:
         
     def unsubscribe(self, event, callback):
         if event in self.listeners:
-            self.listeners[event].remove(callback)
+            if callback in self.listeners[event]:
+                self.listeners[event].remove(callback)
             
     def emit(self, event, data):
         if event in self.listeners:
