@@ -10,9 +10,7 @@ from events.events import (EventEmitter,
                            notify_user) 
 
 
-PRICE_LISTENERS = [on_price_threshold, log_market_event, notify_user]
-
-def listen_keys(emitter, stop_event, price_subscribed):
+def listen_keys(emitter, stop_event, price_subscribed, price_listeners):
     def on_press(key):
         try:
             if key.char == "q":
@@ -20,13 +18,13 @@ def listen_keys(emitter, stop_event, price_subscribed):
                 
             elif key.char == "s":
                 if price_subscribed[0]:
-                    for listener in PRICE_LISTENERS:
+                    for listener in price_listeners:
                         emitter.unsubscribe("price_threshold", listener)
                     price_subscribed[0] = False
                     print("unsubscribed from price_threshold")
                     
                 else:
-                    for listener in PRICE_LISTENERS:
+                    for listener in price_listeners:
                         emitter.subscribe("price_threshold", listener)
                     price_subscribed[0] = True
                     print("subscribed to price_threshold")
@@ -37,7 +35,7 @@ def listen_keys(emitter, stop_event, price_subscribed):
     return keyboard.Listener(on_press=on_press)
 
 
-async def async_run(iterator, seconds, price_threshold=None):
+async def async_run(iterator, seconds, price_threshold=None, enable_logs=True, enable_notifications=True):
     end_time = asyncio.get_event_loop().time() + seconds
     count = 0
     total = 0
@@ -49,19 +47,34 @@ async def async_run(iterator, seconds, price_threshold=None):
 
     emitter = EventEmitter()
     
-    emitter.subscribe("buy_signal", on_buy_signal)
-    emitter.subscribe("buy_signal", log_market_event)
+    active_price_listeners = [on_price_threshold]
+
+    if enable_logs:
+        active_price_listeners.append(log_market_event)
+
+    if enable_notifications:
+        active_price_listeners.append(notify_user)
+
     
+    emitter.subscribe("buy_signal", on_buy_signal)
     emitter.subscribe("sell_signal", on_sell_signal)
-    emitter.subscribe("sell_signal", log_market_event)
+    
+    if enable_logs:
+        emitter.subscribe("buy_signal", log_market_event)
+        emitter.subscribe("sell_signal", log_market_event)
     
     if price_threshold is not None:
-        for listener in PRICE_LISTENERS:
-            emitter.subscribe("price_threshold", listener)
+        emitter.subscribe("price_threshold", on_price_threshold)
+        
+        if enable_logs:
+            emitter.subscribe("price_threshold", log_market_event)
+        
+        if enable_notifications:
+            emitter.subscribe("price_threshold", notify_user)
         
     print("Controls: q - stop, s - toogle price alerts")
     
-    listener = listen_keys(emitter, stop_event, price_subscribed)
+    listener = listen_keys(emitter, stop_event, price_subscribed, active_price_listeners)
     listener.start()
         
 

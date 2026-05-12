@@ -1,7 +1,7 @@
 import asyncio
 from market.generator import price_generator, async_price_generator
-from core.runtime import run
 from market.coins import get_coin_info 
+from core.runtime import run
 from core.async_runtime import async_run
 from core.stream import generate_csv, history_stats
 from api.api import get_real_price
@@ -29,8 +29,12 @@ elif command == "async_stream":
         seconds = float(input("seconds: "))
         threshold = input("price threshold(enter to skip): ")
         threshold = float(threshold) if threshold else None
+        
+        enable_logs = input("enable event logs? (y/n): ").strip().lower() == "y"
+        enable_notifications = input("enable notifications? (y/n): ").strip().lower() == "y"
+        
         gen = async_price_generator(symbol=symbol, start_price=50000.0, volatility=100)
-        asyncio.run(async_run(gen, seconds, price_threshold=threshold))
+        asyncio.run(async_run(gen, seconds, price_threshold=threshold, enable_logs=enable_logs, enable_notifications=enable_notifications))
 
 elif command == "info":
     info = get_coin_info(symbol)
