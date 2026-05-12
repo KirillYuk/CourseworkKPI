@@ -95,8 +95,7 @@ async def async_run(iterator, seconds, price_threshold=None):
             alert = {
                 "symbol": tick["symbol"],
                 "rsi": rsi,
-                "signal": signal},
-            
+                "signal": signal}
             alert_queue.enqueue(alert, priority=3)
             emitter.emit("buy_signal", alert)
         
@@ -104,7 +103,7 @@ async def async_run(iterator, seconds, price_threshold=None):
             alert = {
                 "symbol": tick["symbol"],
                 "rsi": rsi,
-                "signal": signal},
+                "signal": signal}
             alert_queue.enqueue(alert, priority=2)
             emitter.emit("sell_signal", alert)
             
