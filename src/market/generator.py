@@ -38,7 +38,7 @@ def price_generator(symbol="CRPR", start_price=50000.0, volatility=10):
         
         change_24h = round(random.uniform(-10, 10), 2)
         rsi = calculate_rsi(prices[-14:])
-        if rsi == None:
+        if rsi is None:
             signal = "NEUTRAL"
         elif rsi < 30:
             signal = "BUY"
@@ -72,7 +72,7 @@ async def async_price_generator(symbol="CRPR", start_price=50000.0, volatility=1
         
         change_24h = round(random.uniform(-10, 10), 2)
         rsi = calculate_rsi(prices[-14:])
-        if rsi == None:
+        if rsi is None:
             signal = "NEUTRAL"
         elif rsi < 30:
             signal = "BUY"

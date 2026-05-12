@@ -1,6 +1,6 @@
 import asyncio
 from pynput import keyboard
-from rich import print
+from rich.console import Console
 from market.alerts import BiQueue
 from events.events import (EventEmitter,
                            on_buy_signal,
@@ -8,6 +8,8 @@ from events.events import (EventEmitter,
                            on_price_threshold,
                            log_market_event,
                            notify_user) 
+
+console = Console()
 
 
 def listen_keys(emitter, stop_event, price_subscribed, price_listeners):
@@ -72,7 +74,7 @@ async def async_run(iterator, seconds, price_threshold=None, enable_logs=True, e
         if enable_notifications:
             emitter.subscribe("price_threshold", notify_user)
         
-    print("Controls: q - stop, s - toogle price alerts")
+    console.print("Controls: [red]q -> stop[/], [cyan]s -> toogle price alerts[/]")
     
     listener = listen_keys(emitter, stop_event, price_subscribed, active_price_listeners)
     listener.start()
@@ -96,9 +98,9 @@ async def async_run(iterator, seconds, price_threshold=None, enable_logs=True, e
         signal = tick["technical"]["signal"]
         
         
-        print(f"[white]{count}[/white]"
-              f"[red]{tick["symbol"]}[/red]"
-              f"[green]{round(tick["price"], 2)}[green]",
+        console.print(f"[white]{count}[/]",
+              f"[red]{tick["symbol"]}[/]",
+              f"[green]{round(tick["price"], 2)}[/]",
               "   avg: ", avg,
               "   min: ", min_price,
               "   max: ", max_price)

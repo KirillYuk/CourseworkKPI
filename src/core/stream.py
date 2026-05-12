@@ -37,10 +37,10 @@ def history_stats(filename, symbol):
         count+=1
         total+=price
         
-        if min_price == None or price < min_price:
+        if min_price is None or price < min_price:
             min_price = price
             
-        if max_price == None or price > max_price:
+        if max_price is None or price > max_price:
             max_price = price
             
         avg = round(total/count, 2)
@@ -53,3 +53,4 @@ def history_stats(filename, symbol):
             "min": min_price,
             "max": max_price,  
         }
+        

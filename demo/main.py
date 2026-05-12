@@ -36,6 +36,7 @@ elif command == "async_stream":
         gen = async_price_generator(symbol=symbol, start_price=50000.0, volatility=100)
         asyncio.run(async_run(gen, seconds, price_threshold=threshold, enable_logs=enable_logs, enable_notifications=enable_notifications))
 
+
 elif command == "info":
     info = get_coin_info(symbol)
     if info:
@@ -43,6 +44,7 @@ elif command == "info":
             print(key + ":", value)
     else:
         print("coin not found", symbol)
+        
         
 elif command == "history":
     filename = "history.csv"
@@ -59,6 +61,7 @@ elif command == "history":
             "min: ", row["min"],
             "max: ", row["max"],
         )
+        
         
 elif command == "price":
     data = get_real_price(symbol)
