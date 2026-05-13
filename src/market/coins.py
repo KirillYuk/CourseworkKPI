@@ -34,6 +34,6 @@ COINS = {
 }
 
 
-@memoize
+@memoize(max_size=100, policy="lru")
 def get_coin_info(symbol):
     return COINS.get(symbol.upper())
