@@ -7,25 +7,33 @@ class BiQueue:
         self.queue.append((self.counter, priority, item))
         self.counter += 1
 
-    def dequeue(self, mode):
+    def _select(self, mode):
         if len(self.queue) == 0:
             return None
         
         if mode == 'highest':
-            item = max(self.queue, key=lambda x: x[1])
+            return max(self.queue, key=lambda x: x[1])
+            
         elif mode == 'lowest':
-            item = min(self.queue, key=lambda x: x[1])
+            return min(self.queue, key=lambda x: x[1])
+            
+        elif mode == 'oldest':
+            return min(self.queue, key=lambda x: x[0])
+        
+        elif mode == 'newest':
+            return max(self.queue, key=lambda x: x[0])
+        
+        raise ValueError("Unknown mode: " + mode)
 
+    def dequeue(self, mode):
+        item = self._select(mode)
+        if item is None:
+            return None
         self.queue.remove(item)
         return item[2]
     
     def peek(self, mode):
-        if len(self.queue) == 0:
+        item = self._select(mode)
+        if item is None:
             return None
-
-        if mode == 'highest':
-            item = max(self.queue, key=lambda x: x[1])
-        elif mode == 'lowest':
-            item = min(self.queue, key=lambda x: x[1])
-
         return item[2]
