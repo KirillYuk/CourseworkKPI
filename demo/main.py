@@ -4,6 +4,7 @@ from market.coins import get_coin_info
 from core.runtime import run
 from core.async_runtime import async_run
 from core.stream import generate_csv, history_stats
+from core.async_array import async_filter
 from api.api import get_real_price
 
 
@@ -70,6 +71,17 @@ elif command == "price":
             print(key, value)
     else:
         print("coin not found", symbol)
+        
+        
+elif command == "scan":
+    raw_symbols = input("enter symbols separated by comma: ")
+    symbols = [item.strip().upper() for item in raw_symbols.split(",")]
+    
+    async def coin_exists(symbol):
+        return get_coin_info(symbol) is not None
+    
+    valid_symbols = asyncio.run(async_filter(symbols, coin_exists))
+    print("valid symbols:", valid_symbols)
         
         
 else:
