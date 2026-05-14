@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from core.proxy import AuthProxy
+from core.cache import memoize
 
 load_dotenv()
 
@@ -11,7 +12,7 @@ proxy = AuthProxy(method="api_key", key=os.getenv("API_KEY"))
 def normalize_symbol(symbol):
     return symbol.strip().upper()
 
-
+@memoize(max_size=20, policy="lru", ttl=60)
 def get_real_price(symbol):
     symbol = normalize_symbol(symbol)
     data = proxy.get(base_url + "/getData", params={"symbol": symbol})
