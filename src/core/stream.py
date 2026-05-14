@@ -21,8 +21,9 @@ def read_csv(filename):
             yield row
             
 def filter_by_symbol(filename, symbol):
+    symbol = symbol.strip().upper()
     for row in read_csv(filename):
-        if row["symbol"] == symbol:
+        if row["symbol"].strip().upper() == symbol:
             yield row
             
 def history_stats(filename, symbol):
