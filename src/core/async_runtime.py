@@ -12,7 +12,19 @@ from events.events import (EventEmitter,
 console = Console()
 
 
-def listen_keys(emitter, stop_event, price_subscribed, price_listeners):
+def print_alert_queue_state(alert_queue):
+    newest_alert = alert_queue.peek("newest")
+    highest_alert = alert_queue.peek("highest")
+    oldest_alert = alert_queue.peek("oldest")
+    lowest_alert = alert_queue.peek("lowest")
+    
+    console.print("[queue] newest: ", newest_alert)
+    console.print("[queue] highest priority: ", highest_alert)
+    console.print("[queue] oldest: ", oldest_alert)
+    console.print("[queue] lowest priority: ", lowest_alert)
+
+
+def listen_keys(emitter, stop_event, price_subscribed, price_listeners, alert_queue):
     def on_press(key):
         try:
             if key.char == "q":
@@ -23,21 +35,24 @@ def listen_keys(emitter, stop_event, price_subscribed, price_listeners):
                     for listener in price_listeners:
                         emitter.unsubscribe("price_threshold", listener)
                     price_subscribed[0] = False
-                    print("unsubscribed from price_threshold")
+                    console.print("[control] price alerts disabled")
                     
                 else:
                     for listener in price_listeners:
                         emitter.subscribe("price_threshold", listener)
                     price_subscribed[0] = True
-                    print("subscribed to price_threshold")
+                    console.print("[control] price alerts enabled")
                     
+            elif key.char == "a":
+                print_alert_queue_state(alert_queue)
+                
         except AttributeError:
             pass
         
     return keyboard.Listener(on_press=on_press)
 
 
-async def async_run(iterator, seconds, price_threshold=None, enable_logs=True, enable_notifications=True):
+async def async_run(iterator, seconds, price_threshold=None, enable_logs=False, enable_notifications=True):
     end_time = asyncio.get_event_loop().time() + seconds
     count = 0
     total = 0
@@ -50,7 +65,6 @@ async def async_run(iterator, seconds, price_threshold=None, enable_logs=True, e
     emitter = EventEmitter()
     
     active_price_listeners = [on_price_threshold]
-
     if enable_logs:
         active_price_listeners.append(log_market_event)
 
@@ -66,65 +80,62 @@ async def async_run(iterator, seconds, price_threshold=None, enable_logs=True, e
         emitter.subscribe("sell_signal", log_market_event)
     
     if price_threshold is not None:
-        emitter.subscribe("price_threshold", on_price_threshold)
+        for listener in active_price_listeners:
+            emitter.subscribe("price_threshold", listener)
+
         
-        if enable_logs:
-            emitter.subscribe("price_threshold", log_market_event)
-        
-        if enable_notifications:
-            emitter.subscribe("price_threshold", notify_user)
-        
-    console.print("Controls: [red]q -> stop[/], [cyan]s -> toogle price alerts[/]")
+    console.print("Controls: [red]q -> stop[/], [cyan]s -> toogle price alerts[/], [magenta]a -> show alert queue[/]")
     
-    listener = listen_keys(emitter, stop_event, price_subscribed, active_price_listeners)
+    listener = listen_keys(emitter, stop_event, price_subscribed, active_price_listeners, alert_queue)
     listener.start()
         
+    try:
+        async for tick in iterator:
+            if asyncio.get_event_loop().time() > end_time or stop_event.is_set():
+                break
 
-    async for tick in iterator:
-        if asyncio.get_event_loop().time() > end_time or stop_event.is_set():
-            break
+            count += 1
+            total += tick["price"]
 
-        count += 1
-        total += tick["price"]
+            if min_price is None or tick["price"] < min_price:
+                min_price = tick["price"]
+            if max_price is None or tick["price"] > max_price:
+                max_price = tick["price"]
 
-        if min_price is None or tick["price"] < min_price:
-            min_price = tick["price"]
-        if max_price is None or tick["price"] > max_price:
-            max_price = tick["price"]
+            avg = round(total/count, 2)
 
-        avg = round(total/count, 2)
-
-        rsi = tick["technical"]["rsi"]
-        signal = tick["technical"]["signal"]
-        
-        
-        console.print(f"[white]{count}[/]",
-              f"[red]{tick["symbol"]}[/]",
-              f"[green]{round(tick["price"], 2)}[/]",
-              "   avg: ", avg,
-              "   min: ", min_price,
-              "   max: ", max_price)
-        
-        
-        if signal == "BUY":
-            alert = {
-                "symbol": tick["symbol"],
-                "rsi": rsi,
-                "signal": signal}
-            alert_queue.enqueue(alert, priority=3)
-            emitter.emit("buy_signal", alert)
-        
-        elif signal == "SELL":
-            alert = {
-                "symbol": tick["symbol"],
-                "rsi": rsi,
-                "signal": signal}
-            alert_queue.enqueue(alert, priority=2)
-            emitter.emit("sell_signal", alert)
+            rsi = tick["technical"]["rsi"]
+            signal = tick["technical"]["signal"]
             
-        if price_threshold is not None and tick["price"] > price_threshold:
-            emitter.emit("price_threshold", {
-                "symbol": tick["symbol"],
-                "price": tick["price"]})
             
-    listener.stop()
+            console.print(f"[white]{count}[/]",
+                f"[red]{tick["symbol"]}[/]",
+                f"[green]{round(tick["price"], 2)}[/]",
+                "   avg: ", avg,
+                "   min: ", min_price,
+                "   max: ", max_price)
+            
+            
+            if signal == "BUY":
+                alert = {
+                    "symbol": tick["symbol"],
+                    "rsi": rsi,
+                    "signal": signal}
+                alert_queue.enqueue(alert, priority=3)
+                emitter.emit("buy_signal", alert)
+            
+            elif signal == "SELL":
+                alert = {
+                    "symbol": tick["symbol"],
+                    "rsi": rsi,
+                    "signal": signal}
+                alert_queue.enqueue(alert, priority=2)
+                emitter.emit("sell_signal", alert)
+                
+            if price_threshold is not None and tick["price"] > price_threshold:
+                emitter.emit("price_threshold", {
+                    "symbol": tick["symbol"],
+                    "price": tick["price"]})
+    
+    finally:
+        listener.stop()
