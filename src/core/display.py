@@ -11,11 +11,13 @@ def show_startup(message):
     with console.status(message, spinner="dots"):
         time.sleep(2)
         
+        
 def print_controls():
     console.print("Controls:",
                   "[red]q[/] stop",
                   "[cyan]s[/] toggle price alerts",
                   "[magenta]a[/] show alert queue")
+    
     
 def print_tick(count, tick, avg, min_price, max_price):
     table = Table.grid(padding=(0, 3))
@@ -63,5 +65,42 @@ def print_queue_state(alert_queue):
 
     for label, value in rows:
         table.add_row(f"[cyan]{label:<8}[/]", str(value))
+
+    console.print(table)
+    
+    
+def print_api_price(data):
+    status = data.get("status")
+    
+    if status != "success":
+        console.print("[red]API error:[/]", data)
+        return
+    
+    symbols = data.get("symbols", [])
+    
+    if not symbols:
+        console.print("[yellow]No market data returned[/]")
+        return
+    
+    table = Table.grid(padding=(0, 3))
+    table.add_column(no_wrap=True)
+    table.add_column(justify="right", no_wrap=True)
+    table.add_column(justify="right", no_wrap=True)
+    table.add_column(justify="right", no_wrap=True)
+    table.add_column(justify="right", no_wrap=True)
+    table.add_column(no_wrap=True)
+
+    for item in symbols:
+        change = float(item["daily_change_percentage"])
+        change_color = "green" if change >= 0 else "red"
+
+        table.add_row(
+            f"[red]{item['symbol']:<6}[/]",
+            f"last [green]{float(item['last']):>.2f}[/]",
+            f"low [blue]{float(item['lowest']):>.2f}[/]",
+            f"high [magenta]{float(item['highest']):>.2f}[/]",
+            f"24h [{change_color}]{change:>.2f}%[/]",
+            f"[dim]{item['source_exchange']}[/]",
+        )
 
     console.print(table)

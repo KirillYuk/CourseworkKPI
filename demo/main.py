@@ -5,7 +5,7 @@ from core.runtime import run
 from core.async_runtime import async_run
 from core.stream import generate_csv, history_stats
 from core.async_array import async_filter
-from core.display import console
+from core.display import console, print_api_price
 from api.api import get_real_price
 
 
@@ -68,8 +68,7 @@ elif command == "history":
 elif command == "price":
     data = get_real_price(symbol)
     if data:
-        for key, value in data.items():
-            print(key, value)
+        print_api_price(data)
     else:
         console.print("[red]coin not found[/]", symbol)
         

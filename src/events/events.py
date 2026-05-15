@@ -29,7 +29,7 @@ def on_price_threshold(data):
     console.print(f"[event] [yellow]PRICE[/] {data["symbol"]} price: {data["price"]}")
     
 def log_market_event(data):
-    console.print(f"[log] {data}")
+    console.print(f"[dim][log] {data}[/]")
     
 def notify_user(data):
     console.print(f"[notify] Important market event for {data['symbol']}")
