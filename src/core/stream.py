@@ -54,4 +54,3 @@ def history_stats(filename, symbol):
             "min": min_price,
             "max": max_price,  
         }
-        

@@ -14,8 +14,8 @@ proxy = AuthProxy(method="api_key", key=os.getenv("API_KEY"))
 def normalize_symbol(symbol):
     return symbol.strip().upper()
 
-@log(level="INFO")
 @memoize(max_size=20, policy="lru", ttl=60)
+@log(level="INFO")
 def get_real_price(symbol):
     symbol = normalize_symbol(symbol)
     data = proxy.get(base_url + "/getData", params={"symbol": symbol})

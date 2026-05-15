@@ -33,4 +33,3 @@ class AuthProxy:
         response = requests.get(url, headers=headers, params=params)
         response.raise_for_status()
         return response.json()
-    

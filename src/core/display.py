@@ -9,7 +9,7 @@ console = Console()
 
 def show_startup(message):
     with console.status(message, spinner="dots"):
-        time.sleep(2)
+        time.sleep(0.5)
         
         
 def print_controls():
