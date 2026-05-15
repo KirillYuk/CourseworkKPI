@@ -6,3 +6,4 @@ docs.md
 history.csv
 TESTING/
 .env
+app.log
