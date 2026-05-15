@@ -5,17 +5,18 @@ from core.runtime import run
 from core.async_runtime import async_run
 from core.stream import generate_csv, history_stats
 from core.async_array import async_filter
+from core.display import console
 from api.api import get_real_price
 
 
-command = input("command (stream/async_stream/info/history/price/scan): ")
+command = input("command (stream/async_stream/info/history/price/scan): ").strip().lower()
 symbol = input("symbol: ").strip().upper()
 
 
 if command == "stream":
     info = get_coin_info(symbol)
     if not info:
-        print("coin not found", symbol)
+        console.print("[red]coin not found[/]", symbol)
     else:
         seconds = float(input("seconds: "))
         gen = price_generator(symbol=symbol, start_price=50000.0, volatility=10)
@@ -25,7 +26,7 @@ if command == "stream":
 elif command == "async_stream":
     info = get_coin_info(symbol)
     if not info:
-        print("coin not found:", symbol)
+        console.print("[red]coin not found[/]", symbol)
     else:
         seconds = float(input("seconds: "))
         threshold = input("price threshold(enter to skip): ")
@@ -44,7 +45,7 @@ elif command == "info":
         for key, value in info.items():
             print(key + ":", value)
     else:
-        print("coin not found", symbol)
+        console.print("[red]coin not found[/]", symbol)
         
         
 elif command == "history":
@@ -70,7 +71,7 @@ elif command == "price":
         for key, value in data.items():
             print(key, value)
     else:
-        print("coin not found", symbol)
+        console.print("[red]coin not found[/]", symbol)
         
         
 elif command == "scan":

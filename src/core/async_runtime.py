@@ -1,6 +1,6 @@
 import asyncio
 from pynput import keyboard
-from rich.console import Console
+from core.display import console, print_controls, print_tick, print_queue_state, show_startup
 from market.alerts import BiQueue
 from events.events import (EventEmitter,
                            on_buy_signal,
@@ -8,20 +8,6 @@ from events.events import (EventEmitter,
                            on_price_threshold,
                            log_market_event,
                            notify_user) 
-
-console = Console()
-
-
-def print_alert_queue_state(alert_queue):
-    newest_alert = alert_queue.peek("newest")
-    highest_alert = alert_queue.peek("highest")
-    oldest_alert = alert_queue.peek("oldest")
-    lowest_alert = alert_queue.peek("lowest")
-    
-    console.print("[queue] newest: ", newest_alert)
-    console.print("[queue] highest priority: ", highest_alert)
-    console.print("[queue] oldest: ", oldest_alert)
-    console.print("[queue] lowest priority: ", lowest_alert)
 
 
 def listen_keys(emitter, stop_event, price_subscribed, price_listeners, alert_queue):
@@ -44,13 +30,12 @@ def listen_keys(emitter, stop_event, price_subscribed, price_listeners, alert_qu
                     console.print("[control] price alerts enabled")
                     
             elif key.char == "a":
-                print_alert_queue_state(alert_queue)
+                print_queue_state(alert_queue)
                 
         except AttributeError:
             pass
         
     return keyboard.Listener(on_press=on_press)
-
 
 async def async_run(iterator, seconds, price_threshold=None, enable_logs=False, enable_notifications=True):
     end_time = asyncio.get_event_loop().time() + seconds
@@ -84,7 +69,8 @@ async def async_run(iterator, seconds, price_threshold=None, enable_logs=False, 
             emitter.subscribe("price_threshold", listener)
 
         
-    console.print("Controls: [red]q -> stop[/], [cyan]s -> toogle price alerts[/], [magenta]a -> show alert queue[/]")
+    show_startup("Starting async market stream...")
+    print_controls()
     
     listener = listen_keys(emitter, stop_event, price_subscribed, active_price_listeners, alert_queue)
     listener.start()
@@ -108,12 +94,7 @@ async def async_run(iterator, seconds, price_threshold=None, enable_logs=False, 
             signal = tick["technical"]["signal"]
             
             
-            console.print(f"[white]{count}[/]",
-                f"[red]{tick["symbol"]}[/]",
-                f"[green]{round(tick["price"], 2)}[/]",
-                "   avg: ", avg,
-                "   min: ", min_price,
-                "   max: ", max_price)
+            print_tick(count, tick, avg, min_price, max_price)
             
             
             if signal == "BUY":

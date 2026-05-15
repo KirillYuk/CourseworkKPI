@@ -1,3 +1,5 @@
+from core.display import console
+
 class EventEmitter:
     def __init__(self):
         self.listeners = {}
@@ -18,16 +20,16 @@ class EventEmitter:
                 
                 
 def on_buy_signal(data):
-    print(f"[event] BUY signal {data["symbol"]} RSI: {data["rsi"]}")
+    console.print(f"[event] [green]BUY[/] {data["symbol"]} RSI: {data["rsi"]}")
         
 def on_sell_signal(data):
-    print(f"[event] SELL signal {data["symbol"]} RSI: {data["rsi"]}")
+    console.print(f"[event] [red]SELL[/] {data["symbol"]} RSI: {data["rsi"]}")
         
 def on_price_threshold(data):
-    print(f"[event] PRICE threshold {data["symbol"]} price: {data["price"]}")
+    console.print(f"[event] [yellow]PRICE[/] {data["symbol"]} price: {data["price"]}")
     
 def log_market_event(data):
-    print(f"[log] market event: {data}")
+    console.print(f"[log] {data}")
     
 def notify_user(data):
-    print(f"[notify] Important market event for {data['symbol']}")
+    console.print(f"[notify] Important market event for {data['symbol']}")

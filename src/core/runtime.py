@@ -1,5 +1,5 @@
 import time
-from rich import print
+from core.display import print_tick, print_signal, show_startup
 from market.alerts import BiQueue
 
 
@@ -10,7 +10,8 @@ def run(iterator, seconds):
     min_price = None
     max_price = None
     alert_queue = BiQueue()
-
+    
+    show_startup("Starting sync market stream...")
 
     for tick in iterator:
         if time.time() > end_time:
@@ -30,26 +31,24 @@ def run(iterator, seconds):
         signal = tick["technical"]["signal"]
         
         
-        print(f"[white]{count}[/white] [red]{tick["symbol"]}[/red] [green]{round(tick["price"], 2)}[green]", "   avg: ", avg, "   min: ", min_price, "   max: ", max_price)
+        print_tick(count, tick, avg, min_price, max_price)
         
         
         if signal == "BUY":
-            alert_queue.enqueue(
-                {"symbol": tick["symbol"],
+            alert = {"symbol": tick["symbol"],
                  "rsi": rsi,
-                 "signal": signal},
-                priority=3
-            )
-            print(f"[green]BUY {tick["symbol"]} RSI: {rsi}[/green]")
+                 "signal": signal
+                 }
+            alert_queue.enqueue(alert, priority=3)
+            print_signal("BUY", alert)
         
         elif signal == "SELL":
-            alert_queue.enqueue(
-                {"symbol": tick["symbol"],
+            alert = {"symbol": tick["symbol"],
                  "rsi": rsi,
-                 "signal": signal},
-                priority=2
-            )
-            print(f"[red]SELL {tick["symbol"]} RSI: {rsi}[/red]")
+                 "signal": signal
+                 }
+            alert_queue.enqueue(alert, priority=2)
+            print_signal("SELL", alert)
         
         
-        time.sleep(1)
+        time.sleep(3)
