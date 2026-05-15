@@ -8,7 +8,7 @@ from core.async_array import async_filter
 from api.api import get_real_price
 
 
-command = input("command (stream/async_stream/info): ")
+command = input("command (stream/async_stream/info/history/price/scan): ")
 symbol = input("symbol: ").strip().upper()
 
 
