@@ -51,11 +51,10 @@ python demo/main.py
 ## Preview
 
 ### Async stream
-![stream](preview/stream.png)
+![stream preview](preview/stream.gif)
 
-### Alert system
-![alerts](preview/alerts.png)
-
+### API request
+![API request preview](preview/apir.gif)
 ## Технології
 - [Python 3.12+](https://www.python.org/)
 - [rich](https://github.com/textualize/rich)
