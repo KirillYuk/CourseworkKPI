@@ -26,7 +26,7 @@ def on_sell_signal(data):
     console.print(f"[event] [red]SELL[/] {data["symbol"]} RSI: {data["rsi"]}")
         
 def on_price_threshold(data):
-    console.print(f"[event] [yellow]PRICE[/] {data["symbol"]} price: {data["price"]}")
+    console.print(f"[event] [yellow]PRICE[/] {data["symbol"]} price: {data["price"]} > threshold")
     
 def log_market_event(data):
     console.print(f"[dim][log] {data}[/]")

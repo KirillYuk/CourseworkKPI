@@ -30,12 +30,12 @@ def print_tick(count, tick, avg, min_price, max_price):
     table.add_column(justify="right", no_wrap=True)
     
     table.add_row(
-        f"[white]{count:>4}[/]",
-        f"[red]{tick['symbol']:<6}[/]",
-        f"[green]{tick['price']:>10.2f}[/]",
-        f"avg [cyan]{avg:>10.2f}[/]",
-        f"min [blue]{min_price:>10.2f}[/]",
-        f"max [magenta]{max_price:>10.2f}[/]",
+        f"[dim]{count:>4}[/]",
+        f"[white]{tick['symbol']:>2}[/]",
+        f"[yellow]{tick['price']:>.2f}[/]",
+        f"avg [cyan]{avg:>.2f}[/]",
+        f"min [green]{min_price:>.2f}[/]",
+        f"max [magenta]{max_price:>.2f}[/]",
     )
 
     console.print(table)
@@ -95,7 +95,7 @@ def print_api_price(data):
         change_color = "green" if change >= 0 else "red"
 
         table.add_row(
-            f"[red]{item['symbol']:<6}[/]",
+            f"[white]{item['symbol']:<6}[/]",
             f"last [green]{float(item['last']):>.2f}[/]",
             f"low [blue]{float(item['lowest']):>.2f}[/]",
             f"high [magenta]{float(item['highest']):>.2f}[/]",
